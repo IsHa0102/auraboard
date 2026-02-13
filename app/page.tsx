@@ -19,10 +19,10 @@ export default function Home() {
   const [category, setCategory] = useState("Personal");
 
   const [mood, setMood] = useState("calm");
-  const [reflection, setReflection] = useState("Loading your atmosphere...");
+  const [reflection, setReflection] = useState("Loading...");
   const [refreshKey, setRefreshKey] = useState(0);
 
-  // 🌿 Load tasks
+  // Load tasks
   useEffect(() => {
     if (status !== "authenticated") return;
 
@@ -36,10 +36,10 @@ export default function Home() {
     loadTasks();
   }, [status]);
 
-  // 🌿 Fetch reflection
+  // Reflection
   useEffect(() => {
     const fetchReflection = async () => {
-      setReflection("Composing something soft... ✨");
+      setReflection("Loading...");
 
       const res = await fetch("/api/reflection", {
         method: "POST",
@@ -54,7 +54,7 @@ export default function Home() {
     fetchReflection();
   }, [mood, refreshKey]);
 
-  // 🌿 Add task
+  // Add task
   const addTask = async () => {
     if (!input.trim()) return;
 
@@ -63,7 +63,7 @@ export default function Home() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         text: input,
-        category: category,
+        category,
       }),
     });
 
@@ -74,7 +74,7 @@ export default function Home() {
     setInput("");
   };
 
-  // 🌿 Toggle
+  // Toggle
   const toggleTask = async (task: Task) => {
     const res = await fetch("/api/tasks", {
       method: "PATCH",
@@ -92,7 +92,7 @@ export default function Home() {
     );
   };
 
-  // 🌿 Delete
+  // Delete
   const deleteTask = async (task: Task) => {
     await fetch("/api/tasks", {
       method: "DELETE",
@@ -108,191 +108,181 @@ export default function Home() {
   const progress =
     totalCount === 0 ? 0 : (completedCount / totalCount) * 100;
 
-  const themes: any = {
-    calm: "bg-gradient-to-br from-green-100 to-emerald-200 text-green-900",
-    focused: "bg-gradient-to-br from-blue-100 to-indigo-200 text-blue-900",
-    tired: "bg-gradient-to-br from-purple-100 to-pink-200 text-purple-900",
-    motivated: "bg-gradient-to-br from-orange-100 to-yellow-200 text-orange-900",
-  };
-
-  // 🔐 Auth states
+  // Auth states
   if (status === "loading") {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center text-gray-500">
         Loading...
       </div>
     );
   }
 
-  if (status !== "authenticated") {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-200 via-green-100 to-emerald-300">
-        <div className="bg-white p-10 rounded-3xl shadow-2xl text-center space-y-6">
-          <h1 className="text-3xl font-semibold text-emerald-900">
-            Welcome to AuraBoard 🌿
+ if (status !== "authenticated") {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-6">
+
+      <div className="w-full max-w-md bg-white border border-gray-200 rounded-2xl shadow-sm p-10 space-y-8">
+
+        <div className="space-y-3 text-center">
+          <h1 className="text-2xl font-semibold tracking-tight text-gray-900">
+            AuraBoard
           </h1>
-          <p className="text-sm text-emerald-700 opacity-80">
-            Sign in to continue your garden.
+
+          <p className="text-sm text-gray-500">
+            Sign in to continue
           </p>
-          <button
-            onClick={() => signIn("google")}
-            className="px-8 py-3 bg-emerald-600 text-white rounded-full shadow-md hover:bg-emerald-700 transition font-medium"
-          >
-            Sign in with Google
-          </button>
         </div>
+
+        <button
+          onClick={() => signIn("google")}
+          className="
+            w-full
+            py-3
+            rounded-xl
+            border border-gray-300
+            bg-white
+            text-gray-800
+            text-sm
+            font-medium
+            hover:bg-gray-100
+            transition
+          "
+        >
+          Continue with Google
+        </button>
+
       </div>
-    );
-  }
+
+    </div>
+  );
+}
+
 
   return (
-    <div className={`min-h-screen transition-all duration-500 ${themes[mood]}`}>
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="w-full max-w-2xl p-8 space-y-8">
+    <div className="min-h-screen bg-gray-50 text-gray-800">
+      <div className="max-w-3xl mx-auto px-6 py-12 space-y-10">
 
-          {/* Top Bar */}
-          <div className="text-right text-sm flex justify-end items-center gap-4">
-            <Link href="/profile" className="underline hover:opacity-70">
+        {/* Header */}
+        <div className="flex justify-between items-center">
+          <h1 className="text-xl font-semibold tracking-tight">
+            AuraBoard
+          </h1>
+
+          <div className="flex items-center gap-6 text-sm text-gray-500">
+            <Link href="/profile" className="hover:text-black transition">
               Profile
             </Link>
-            <span>{session?.user?.email ?? ""}</span>
+
+            <span>{session?.user?.email}</span>
+
             <button
               onClick={() => signOut()}
-              className="underline hover:opacity-70"
+              className="hover:text-black transition"
             >
               Sign out
             </button>
           </div>
+        </div>
 
-          <h1 className="text-5xl font-light tracking-wide text-center">
-            AuraBoard 🌿
-          </h1>
+        {/* Reflection */}
+        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+          <h3 className="text-sm font-medium text-gray-500 mb-3">
+            Reflection
+          </h3>
+          <p className="text-sm leading-relaxed text-gray-700">
+            {reflection}
+          </p>
+          <button
+            onClick={() => setRefreshKey((prev) => prev + 1)}
+            className="mt-4 text-xs text-gray-400 hover:text-gray-700 transition"
+          >
+            Refresh
+          </button>
+        </div>
 
-          {/* Mood */}
-          <div className="text-center">
-            <h2 className="mb-4 text-lg opacity-70">
-              Today feels like...
-            </h2>
-            <div className="flex justify-center gap-4 flex-wrap">
-              {["calm", "focused", "tired", "motivated"].map((m) => (
-                <button
-                  key={m}
-                  onClick={() => setMood(m)}
-                  className={`px-5 py-2 rounded-full shadow-md transition ${
-                    mood === m
-                      ? "bg-white scale-105"
-                      : "bg-white/60 hover:scale-105"
-                  }`}
-                >
-                  {m}
-                </button>
-              ))}
+        {/* Tasks */}
+        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm space-y-6">
+          <h3 className="text-sm font-medium text-gray-500">
+            Tasks
+          </h3>
+
+          {totalCount > 0 && (
+            <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-gray-900 transition-all duration-500"
+                style={{ width: `${progress}%` }}
+              />
             </div>
-          </div>
+          )}
 
-          {/* Reflection */}
-          <div className="bg-white/70 backdrop-blur-md p-8 rounded-3xl shadow-lg">
-            <h3 className="text-lg mb-3 font-medium">Daily Reflection</h3>
-            <p className="leading-relaxed min-h-[80px]">
-              {reflection}
-            </p>
-            <button
-              onClick={() => setRefreshKey((prev) => prev + 1)}
-              className="mt-4 text-sm opacity-70 hover:opacity-100 transition"
+          {/* Add */}
+          <div className="flex gap-3">
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-900"
             >
-              refresh reflection ✨
+              <option value="Personal">Personal</option>
+              <option value="Work">Work</option>
+              <option value="Health">Health</option>
+              <option value="Study">Study</option>
+            </select>
+
+            <input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Add task..."
+              className="flex-1 px-4 py-2 rounded-lg border border-gray-300 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
+            />
+
+            <button
+              onClick={addTask}
+              className="px-4 py-2 rounded-lg bg-gray-900 text-white text-sm hover:bg-black transition"
+            >
+              Add
             </button>
           </div>
 
-          {/* Tasks */}
-          <div className="bg-white/60 backdrop-blur-md p-8 rounded-3xl shadow-lg">
-            <h3 className="text-lg mb-4 font-medium">Intentions</h3>
-
-            <div className="text-sm mb-4 opacity-70">
-              {totalCount === 0
-                ? "No tasks yet."
-                : `${completedCount} / ${totalCount} tasks completed`}
-            </div>
-
-            {totalCount > 0 && (
-              <div className="w-full h-2 bg-white/40 rounded-full overflow-hidden mb-4">
-                <div
-                  className="h-full bg-black/40 rounded-full transition-all duration-500"
-                  style={{ width: `${progress}%` }}
-                />
-              </div>
-            )}
-
-            {/* Add Section */}
-            <div className="flex gap-2 mb-4">
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="px-5 py-2 rounded-full border border-gray-300 bg-white/80 text-gray-700 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+          {/* List */}
+          <ul className="space-y-2">
+            {tasks.map((task) => (
+              <li
+                key={task.id}
+                className="flex justify-between items-center border border-gray-200 rounded-lg px-4 py-3"
               >
-                <option value="Personal">Personal</option>
-                <option value="Work">Work</option>
-                <option value="Health">Health</option>
-                <option value="Study">Study</option>
-              </select>
+                <div className="flex items-center gap-3 flex-1">
+                  <input
+                    type="checkbox"
+                    checked={task.completed}
+                    onChange={() => toggleTask(task)}
+                    className="w-4 h-4"
+                  />
 
-              <input
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Add something meaningful..."
-                className="flex-1 px-4 py-2 rounded-full border border-emerald-400 bg-white text-emerald-900 placeholder-emerald-600 focus:outline-none"
-              />
+                  <span
+                    className={`text-sm ${
+                      task.completed
+                        ? "line-through text-gray-400"
+                        : "text-gray-800"
+                    }`}
+                  >
+                    {task.text}
+                  </span>
+                </div>
 
-              <button
-                onClick={addTask}
-                className="px-4 py-2 rounded-full bg-emerald-600 text-white shadow hover:bg-emerald-700 transition"
-              >
-                Add
-              </button>
-            </div>
+                <div className="flex items-center gap-4 text-xs text-gray-400">
+                  {task.category && <span>{task.category}</span>}
 
-            {/* List */}
-            <ul className="space-y-2">
-              {tasks.map((task) => (
-                <li
-                  key={task.id}
-                  className="flex justify-between items-center bg-white/80 px-4 py-3 rounded-2xl shadow-sm"
-                >
-                  <div className="flex items-center gap-3 flex-1">
-                    <input
-                      type="checkbox"
-                      checked={task.completed}
-                      onChange={() => toggleTask(task)}
-                      className="w-4 h-4"
-                    />
-                    <span
-                      className={`text-sm ${
-                        task.completed ? "line-through opacity-50" : ""
-                      }`}
-                    >
-                      {task.text}
-                    </span>
-                  </div>
+                  <button
+                    onClick={() => deleteTask(task)}
+                    className="hover:text-gray-900 transition"
+                  >
+                    ✕
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
 
-                  <div className="flex items-center gap-3">
-                    {task.category && (
-                      <span className="text-xs text-emerald-700/60 font-medium">
-                        {task.category}
-                      </span>
-                    )}
-
-                    <button
-                      onClick={() => deleteTask(task)}
-                      className="text-sm opacity-40 hover:opacity-100 transition"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                </li>
-              ))}
-            </ul>
-
-          </div>
         </div>
       </div>
     </div>

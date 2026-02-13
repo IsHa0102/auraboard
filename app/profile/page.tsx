@@ -16,7 +16,11 @@ export default async function ProfilePage() {
   });
 
   if (!user) {
-    return <div className="p-10">No data found.</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center text-gray-500">
+        No data found.
+      </div>
+    );
   }
 
   const totalTasks = user.tasks.length;
@@ -31,57 +35,60 @@ export default async function ProfilePage() {
   }, {});
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-200 via-amber-100 to-yellow-200 flex items-center justify-center p-6">
-      
-      <div className="w-full max-w-4xl bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl p-10 space-y-10">
+    <div className="min-h-screen bg-gray-50 text-gray-800">
+      <div className="max-w-4xl mx-auto px-6 py-12 space-y-10">
 
-        {/* Title */}
-        <h1 className="text-4xl font-semibold text-orange-900">
-          Your Garden Stats 🌿
-        </h1>
+        {/* Header */}
+        <div className="flex justify-between items-center">
+          <h1 className="text-xl font-semibold tracking-tight">
+            Profile
+          </h1>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+          <a
+            href="/"
+            className="text-sm text-gray-500 hover:text-black transition"
+          >
+            ← Back to Dashboard
+          </a>
+        </div>
 
-          <div className="bg-orange-50 rounded-2xl p-6 shadow-md">
-            <p className="text-sm text-orange-600">Total Tasks</p>
-            <p className="text-3xl font-bold text-orange-800">
-              {totalTasks}
-            </p>
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+          <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+            <p className="text-xs text-gray-500 mb-2">Total Tasks</p>
+            <p className="text-3xl font-semibold">{totalTasks}</p>
           </div>
 
-          <div className="bg-orange-50 rounded-2xl p-6 shadow-md">
-            <p className="text-sm text-orange-600">Completed</p>
-            <p className="text-3xl font-bold text-orange-800">
-              {completedTasks}
-            </p>
+          <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+            <p className="text-xs text-gray-500 mb-2">Completed</p>
+            <p className="text-3xl font-semibold">{completedTasks}</p>
           </div>
 
-          <div className="bg-orange-50 rounded-2xl p-6 shadow-md">
-            <p className="text-sm text-orange-600">Completion Rate</p>
-            <p className="text-3xl font-bold text-orange-800">
-              {completionRate}%
-            </p>
+          <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+            <p className="text-xs text-gray-500 mb-2">Completion Rate</p>
+            <p className="text-3xl font-semibold">{completionRate}%</p>
           </div>
 
         </div>
 
-        {/* Category Section */}
-        <div>
-          <h2 className="text-lg font-semibold text-orange-900 mb-4">
-            By Category
+        {/* Category Breakdown */}
+        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+          <h2 className="text-sm font-medium text-gray-500 mb-6">
+            Tasks by Category
           </h2>
 
-          <div className="space-y-3">
+          <div className="space-y-4">
             {Object.entries(categoryStats).map(([cat, count]) => (
               <div
                 key={cat}
-                className="bg-orange-50 rounded-xl px-6 py-4 flex justify-between items-center shadow-sm"
+                className="flex justify-between items-center border-b border-gray-100 pb-2"
               >
-                <span className="text-orange-800 font-medium">
+                <span className="text-sm text-gray-700">
                   {cat}
                 </span>
-                <span className="text-orange-700/70">
+
+                <span className="text-sm text-gray-500">
                   {count as number}
                 </span>
               </div>

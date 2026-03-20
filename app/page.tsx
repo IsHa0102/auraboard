@@ -165,7 +165,7 @@ export default function Home() {
         {/* Header */}
         <div className="flex justify-between items-center">
           <h1 className="text-xl font-semibold tracking-tight">
-            AuraBoard
+            FlowDesk
           </h1>
 
           <div className="flex items-center gap-6 text-sm text-gray-500">
